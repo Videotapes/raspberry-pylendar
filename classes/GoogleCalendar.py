@@ -92,35 +92,20 @@ class GoogleCalendar:
         
         Returns
         -------
-        event_starts : list
+        list
             A list of event start Arrow datetimes
         """
-        
-        event_starts = []
-
-        for event in self.events:
-            if event["eventType"] == "default":
-                event_starts.append(event["arrowStart"])
-
-        return event_starts
-
+        return [event["arrowStart"] for event in self.events]
 
     def get_event_ends(self) -> list:
         """Returns a list of event end datetimes from the last fetched event list.
 
         Returns
         -------
-        event_ends : list
+        list
             A list of event end Arrow datetimes
         """
-        
-        event_ends = []
-
-        for event in self.events:
-            if event["eventType"] == "default":
-                event_ends.append(event["arrowEnd"])
-
-        return event_ends
+        return [event["arrowEnd"] for event in self.events]
 
     def check_upcoming_events(self) -> bool:
         """Returns a boolean based on whether current stored events are upcoming."""
