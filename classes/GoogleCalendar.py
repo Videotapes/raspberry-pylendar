@@ -149,9 +149,8 @@ class GoogleCalendar:
     def __append_arrow_datetimes(self):
 
         for event in self.events:
-            if event["eventType"] == "default":
-                event["arrowStart"] = arrow.get(event["start"]["dateTime"]).replace(tzinfo=event["start"]["timeZone"])
-                event["arrowEnd"] = arrow.get(event["end"]["dateTime"]).replace(tzinfo=event["end"]["timeZone"])
+            event["arrowStart"] = arrow.get(event["start"]["dateTime"]).replace(tzinfo=event["start"]["timeZone"])
+            event["arrowEnd"] = arrow.get(event["end"]["dateTime"]).replace(tzinfo=event["end"]["timeZone"])
 
 
 
