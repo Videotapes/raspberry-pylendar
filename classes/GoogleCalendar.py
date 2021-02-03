@@ -3,6 +3,8 @@ import os
 import pickle
 from typing import Union
 
+from classes.exceptions.CustomExceptions import CredentialsNotFoundException
+
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 
@@ -80,6 +82,10 @@ class GoogleCalendar:
 
         # shear off the additional top-level user info we're not interested in
         self.events = self.events.get("items", [])
+        # get rid of "outOfOffice" events
+        self.events = [event for event in self.events if event["eventType"] == "default"]
+
+        self.__append_arrow_datetimes()
     
     def get_event_starts(self) -> list:
         """Returns a list of event start datetimes from the last fetched event list.
@@ -94,7 +100,7 @@ class GoogleCalendar:
 
         for event in self.events:
             if event["eventType"] == "default":
-                event_starts.append(arrow.get(event["start"]["dateTime"]).replace(tzinfo=event["start"]["timeZone"]))
+                event_starts.append(event["arrowStart"])
 
         return event_starts
 
@@ -112,7 +118,7 @@ class GoogleCalendar:
 
         for event in self.events:
             if event["eventType"] == "default":
-                event_ends.append(arrow.get(event["end"]["dateTime"]).replace(tzinfo=event["start"]["timeZone"]))
+                event_ends.append(event["arrowEnd"])
 
         return event_ends
 
@@ -135,12 +141,18 @@ class GoogleCalendar:
         """
         
         if self.events:
-            events_copy = self.events.copy()
-            events_copy.sort()
-
-            return events_copy[0]
+            next_event_time = min(event["arrowStart"] for event in self.events if event["arrowStart"] > arrow.now())
+            return [event for event in self.events if event["arrowStart"] == next_event_time][0] 
         else:
             return False
+
+    def __append_arrow_datetimes(self):
+
+        for event in self.events:
+            if event["eventType"] == "default":
+                event["arrowStart"] = arrow.get(event["start"]["dateTime"]).replace(tzinfo=event["start"]["timeZone"])
+                event["arrowEnd"] = arrow.get(event["end"]["dateTime"]).replace(tzinfo=event["end"]["timeZone"])
+
 
 
 
