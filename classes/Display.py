@@ -13,7 +13,7 @@ class Display(UnicornHATMini):
         Location of font to be used for display
     """
 
-    def __init__(self, display_text="default", display_font=None, time_to_live=20):
+    def __init__(self, display_text="default", display_font=None):
         """Initializes the Display object instance.
         
         Parameters
